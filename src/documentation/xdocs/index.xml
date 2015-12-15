@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="css/document.css"?>
+<document>
+	<header>
+		<title>Toska</title>
+		<subtitle>Toolkit for OpenSsh key Administration</subtitle>
+		<authors>
+			<person name="Gianugo Rabellino" email="gianugo@apache.org"/>
+		</authors>
+	</header>
+	<body>
+	<section title="What is this?">
+	 <p>
+   This small project aims to itch an annoying scratch in a network 
+   administrator life. 
+   When you manage a lot of system administrators and developers who
+   need access to various accounts (typically "root", "apache", "oracle" and
+   so on) to different machines, you want to keep it as secure as possible.
+   </p>
+   <p>
+   One possible solution is to use SSH to manage the access to the machines,
+   but you might not want to give away the real user passwords, since this 
+   turns into a bigger security problem. So you switch to key-based 
+   authorization, enabling each user's own key to the various accounts on the
+   various machines.
+   </p>
+   <p>
+   This turns soon into an administration nightmare: keeping track of users,
+   external consultants, people that changes role (and access rights), people
+   that joins the company or leaves it, different project needs: a true PITA
+   where you spend your time hand-editing authorized_keys files.
+   </p>
+  </section> 
+  <section title="Toska to the rescue">
+   <p>
+   This is why Toska was born. I badly needed a tool that allows me and my
+   co-workers to manage in a somehow centralized way the key management stuff. 
+   I wanted to see if I was able to do some GUI programming. I wanted to
+   check if GUI programming with Avalon was feasible. I had (a few) spare
+   time. So this is it!
+   </p>
+   <p>
+   The idea is pretty naive, and the implementation is rough, but, hey, at
+   least this is something. Basically what you have is a database of
+   keys and hosts. Each host has a database of users, and each user can have
+   one or more keys associated to it. You can change the setup on the fly,
+   adding or removing keys, adding or removing hosts and users, enabling
+   or disabling keys should you need it (think about a user going on
+   vacation: you can disable her key for the time being and it will take
+   just a mouse click when she returns).
+   </p>
+   <p>
+   All this comes at a price, of course. :-) What you  have, after
+   operating on Toska, is just a directory tree filled up with user files: you
+   will still have to move manually the generated authorized_keys to the
+   destination machines. But the directory tree is designed so that it should
+   be a matter of minutes to automate this process too (it's already in the
+   TODO list for that matter, but contributions are welcome).
+   </p>
+  </section>
+  <section title="Caveat emptor">
+	 <p>
+   Well, this is free software, so standard disclaimer apply. In addition to 
+   that, keep in mind that I consider myself a half-decent server side 
+   developer: this is my first attempt in GUIs, so don't expect too much 
+   in terms of usability, performance and so on.
+   </p>
+   <p>
+   However, I did my best to make this tool as flexible and easy as possible. 
+   If you have Java Web Start installed, all you need is click 
+   <link href="http://toska.sourceforge.net/webstart/toska.jnlp">here</link> 
+   to install it. The architecture too is somewhat extensible, since it's 
+   based on the great 
+   <link href="http://jakarta.apache.org/avalon">Avalon</link> framework.
+	</p>
+	<p>
+  This said, have fun with Toska. As with every Open Source project, 
+  contributions and feedback are more than welcome!
+  </p>
+	</section>
+	</body>
+</document>

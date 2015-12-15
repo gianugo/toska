@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<toska>
+  <config-handler />
+  <key select="SSH2" />
+  <menubar select="menubar" />
+  <keystree />
+  <menu-manager />
+  <menu select="nop">
+    <nop name="nop"/>
+    <keys name="keys" />
+    <key name="key" />
+    <hostAliases name="hostAliases" />
+    <hostAlias name="hostAlias" />
+    <userAliases name="userAliases" />
+    <userAlias name="userAlias" />
+    <keyAliases name="keyAliases" />
+    <keyAlias name="keyAlias" />
+    <hosts name="hosts" />
+    <host name="host" />
+    <user name="user" />
+  </menu>
+  <panels>
+    <key name="key" />
+    <hostAlias name="hostAlias" />
+    <hostAliasElement name="hostAliasElement" />
+    <userAlias name="userAlias" />
+    <userAliasElement name="userAliasElement" />
+    <keyAlias name="keyAlias" />
+    <keyAliasElement name="keyAliasElement" />
+    <host name="host" />
+    <user name="user" />
+  </panels>
+</toska>

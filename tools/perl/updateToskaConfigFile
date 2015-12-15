@@ -1,0 +1,381 @@
+#!/usr/bin/perl
+#
+# $id$
+#
+use strict;
+use warnings;
+# Modules
+use Getopt::Long;
+use XML::Simple qw(:strict);
+use Data::Dumper;
+# Constants
+use constant VERSION => '$Id: updateToskaConfigFile,v 1.1 2004/11/23 00:39:56 nito007 Exp $ ';
+use constant XMLDECL => '<?xml version="1.0" encoding="UTF-8"?>';
+# Prototypes
+sub get_command_line_options();
+sub XMLToFile($$);
+sub addKey($$$);
+sub deleteKey($$);
+sub addHost($$);
+sub deleteHost($$);
+sub addHostUser($$$);
+sub deleteHostUser($$$);
+sub allowHostUserKey($$$$);
+sub disallowHostUserKey($$$$);
+
+# main
+my ($file, $commandArray_ref) = get_command_line_options;
+print Dumper($commandArray_ref);
+my $xs = new XML::Simple(ForceArray=>1, ForceContent=>1, KeepRoot=>1, KeyAttr=>{});
+my $ref = $xs -> XMLin($file);
+foreach my $commandLine (@$commandArray_ref) {
+  my @commandLine = @$commandLine;
+  my $function = shift @commandLine;
+  &$function ($ref, @commandLine);
+}
+XMLToFile($file, $ref);
+
+# get_command_line_options
+# Checks the commandline options and the configuration file
+# to verify to set the configuration file options
+# Input:
+# implicitly the commandline options
+# Output:
+# An array with the following elements:
+# - Configuration File
+# - An array with the following functions that should be invoked. Each element of the array is
+#   a reference to another array with:
+#   A pointer to the function, the arguments
+
+sub get_command_line_options () {
+  # read command line options
+  my ($file, $version, $help, $addUserKey, $deleteUserKey, $keyFile, $addHost, $deleteHost, $addHostUser, $deleteHostUser, $host, $allowKey, $disallowKey, $hostUser);
+  my @functionArray;
+  GetOptions('file=s'=>\$file, 'version'=>\$version, 'help|?'=> \$help,
+	     'add-key=s'=>\$addUserKey, 'delete-key=s'=>\$deleteUserKey, 'key-file=s'=>\$keyFile,
+	     'add-host=s'=>\$addHost, 'delete-host=s'=>\$deleteHost,
+	     'add-host-user=s'=>\$addHostUser, 'delete-host-user=s'=>\$deleteHostUser, 'host=s'=>\$host,
+	     'allow-key=s'=>\$allowKey, 'disallow-key=s'=>\$disallowKey, 'host-user=s'=> \$hostUser, 'host=s'=>\$host
+	    ) or pod2usage(2);
+
+  if ($version) {
+    print $0." version ".VERSION." Nito.Martinez\@Qindel.ES\n";
+    exit 0;
+  }
+  if ($help) {
+    pod2usage({'-verbose'=>2});
+    exit 0;
+  }
+  die "Cannot open file $file" if (! -f $file);
+  die "You must specify the key-file argument with the option add-keys" if (defined($addUserKey) && !defined($keyFile));
+  die "You must specify the host argument with the option add-host-user" if (defined($addHostUser) && !defined($host));
+  die "You must specify the host argument with the option delete-host-user" if (defined($deleteHostUser) && !defined($host));
+  die "You must specify the host and the host-user argument with the option allow-key" if (defined($allowKey) && (!defined($host)|| !defined($hostUser)));
+  die "You must specify the host and the host-user argument with the option disallow-key" if (defined($disallowKey) && (!defined($host)|| !defined($hostUser)));
+  push @functionArray, [\&deleteKey, $deleteUserKey] if (defined($deleteUserKey));
+  push @functionArray, [\&addKey, $addUserKey, $keyFile] if (defined($addUserKey)  && defined($keyFile));
+  push @functionArray, [\&deleteHost, $deleteHost] if (defined($deleteHost));
+  push @functionArray, [\&addHost, $addHost] if (defined($addHost));
+  push @functionArray, [\&deleteHostUser, $deleteHostUser, $host] if (defined($deleteHostUser));
+  push @functionArray, [\&addHostUser, $addHostUser, $host] if (defined($addHostUser));
+  push @functionArray, [\&disallowHostUserKey, $hostUser, $host, $disallowKey] if (defined($disallowKey));
+  push @functionArray, [\&allowHostUserKey, $hostUser, $host, $allowKey] if (defined($allowKey));
+  return ($file, \@functionArray);
+}
+
+# XMLToFile
+# Input:
+# The file where we want to write the XML config file
+# The hash which we want to output
+# Output:
+# The XML file is written to the file. This script ensures that the keys element is
+# written before the hosts element
+sub XMLToFile ($$) {
+  my ($file, $ref) = @_;
+  my $xs = new XML::Simple(ForceArray=>1, ForceContent=>1, KeepRoot=>1, KeyAttr=>{}, NoIndent=>1);
+  my $xmlkeys = $xs->XMLout({keys => $$ref{'ssh-config'}[0]{keys}[0]});
+  my $xmlhosts = $xs->XMLout({hosts => $$ref{'ssh-config'}[0]{hosts}[0]},);
+  open OUTPUT, ">$file"
+    or die "Cannot write into file $file:$!\n";
+  print OUTPUT XMLDECL."\n";
+  print OUTPUT "<ssh-config>";
+  print OUTPUT $xmlkeys;
+  print OUTPUT $xmlhosts;
+  print OUTPUT "</ssh-config>";
+  close OUTPUT
+    or die "Cannot close file $file: $!";
+}
+
+# addKey
+# Input:
+# The hash reference
+# The name of the key
+# The file where the public key is stored
+# Output:
+# Implicitly the hash_reference gets updated
+sub addKey($$$) {
+  my ($hash_ref, $key, $keyFile) = @_;
+
+  my $old_separator = $/;
+  $/ = undef;
+  open KEY, "$keyFile"
+    or die "Cannot open key file $keyFile: $!";
+  my $pubkey = <KEY>;
+  $/ = $old_separator;
+  chomp $pubkey;
+  close KEY;
+#  print Dumper($hash_ref);
+#  print Dumper($$hash_ref{'ssh-config'}[0]{keys}[0]{key});
+  push @{ $$hash_ref{'ssh-config'}[0]{keys}[0]{key}}, {user=>$key, value => $pubkey};
+#  print Dumper($hash_ref);
+}
+
+
+# deleteKey
+# Input:
+# The hash reference
+# The name of the key
+# Output:
+# Implicitly the hash_reference gets updated
+sub deleteKey($$) {
+  my ($hash_ref, $key) = @_;
+
+#  print Dumper($hash_ref);
+  my $elementNumber = 0;
+  foreach my $keyElement (@{ $$hash_ref{'ssh-config'}[0]{keys}[0]{key}}) {
+    if ($$keyElement{'user'} eq $key) {
+      splice @{ $$hash_ref{'ssh-config'}[0]{keys}[0]{key}}, $elementNumber, 1;
+      last;
+    }
+    $elementNumber ++;
+  }
+#  print Dumper($hash_ref);
+}
+
+# addHost
+# Input:
+# The hash reference
+# The name of the host
+# Output:
+# Implicitly the hash_reference gets updated
+sub addHost ($$) {
+  my ($hash_ref, $host) = @_;
+#  print Dumper($hash_ref);
+  push @{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}, {name=>$host};
+#  print Dumper($hash_ref);
+}
+
+# deleteHost
+# Input:
+# The hash reference
+# The name of the host
+# Output:
+# Implicitly the hash_reference gets updated
+sub deleteHost ($$) {
+  my ($hash_ref, $host) = @_;
+#  print Dumper($hash_ref);
+  my $elementNumber = 0;
+  foreach my $keyElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}) {
+    if ($$keyElement{'name'} eq $host) {
+      splice @{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}, $elementNumber, 1;
+      last;
+    }
+    $elementNumber ++;
+  }
+#  print Dumper($hash_ref);
+}
+
+# addHostUser
+# Input:
+# The hash reference
+# The user to be added
+# The name of the host
+# Output:
+# Implicitly the hash_reference gets updated
+sub addHostUser ($$$) {
+  my ($hash_ref, $user, $host) = @_;
+#  print Dumper($hash_ref);
+  my $elementNumber = 0;
+  foreach my $keyElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}) {
+#    print Dumper($keyElement);
+    if ($$keyElement{'name'} eq $host) {
+#      push @{ $$keyElement{user}}, {name=>$user};
+      push @{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}}, {name=>$user};
+#      print Dumper($keyElement);
+      last;
+    }
+    $elementNumber ++;
+  }
+}
+
+# deleteHost
+# Input:
+# The hash reference
+# The user to be deleted
+# The name of the host
+# Output:
+# Implicitly the hash_reference gets updated
+sub deleteHostUser ($$$) {
+  my ($hash_ref, $user, $host) = @_;
+  print Dumper($hash_ref);
+  my $elementNumber = 0;
+  foreach my $keyElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}) {
+    if ($$keyElement{'name'} eq $host) {
+      my $userNumber = 0;
+      print Dumper($$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user});
+      foreach my $userElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}}) {
+	print Dumper($$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}, $userElement);
+	if ($$userElement{name}  eq $user) {
+	  splice @{$$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}}, $userNumber, 1;
+	  last;
+	}
+	$userNumber ++;
+      }
+      last;
+    }
+    $elementNumber ++;
+  }
+  print Dumper($hash_ref);
+}
+
+
+# addHostUser
+# Input:
+# The hash reference
+# The user to be added
+# The name of the host
+# The key reference to be added
+# Output:
+# Implicitly the hash_reference gets updated
+sub allowHostUserKey ($$$$) {
+  my ($hash_ref, $user, $host, $key) = @_;
+  print Dumper($hash_ref);
+  my $elementNumber = 0;
+  foreach my $keyElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}) {
+    print Dumper($keyElement);
+    if ($$keyElement{'name'} eq $host) {
+      my $userNumber = 0;
+      foreach my $userElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}}) {
+	print Dumper($userElement);
+	if ($$userElement{name}  eq $user) {
+	  push @{ $$userElement{'ssh-key'} }, {'user'=>$key};
+	  last;
+	}
+	$userNumber ++;
+      }
+      print Dumper($keyElement);
+      last;
+    }
+    $elementNumber ++;
+  }
+}
+
+# deleteHost
+# Input:
+# The hash reference
+# The user to be deleted
+# The name of the host
+# The key reference to be added
+# Output:
+# Implicitly the hash_reference gets updated
+sub disallowHostUserKey ($$$$) {
+  my ($hash_ref, $user, $host, $key) = @_;
+  print Dumper($hash_ref);
+  my $elementNumber = 0;
+  foreach my $keyElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}}) {
+    if ($$keyElement{'name'} eq $host) {
+      my $userNumber = 0;
+      print Dumper($$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user});
+      foreach my $userElement (@{ $$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}}) {
+	print Dumper($$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}, $userElement);
+	if ($$userElement{name}  eq $user) {
+	  my $keyNumber = 0;
+	  foreach my $pubkeyElement (@{ $$userElement{'ssh-key'}}) {
+	    print Dumper($pubkeyElement);
+	    if ($$pubkeyElement{user} eq $key) {
+	      splice @{$$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}[$userNumber]{'ssh-key'}}, $keyNumber, 1;
+	      last;
+	    }
+	    $keyNumber ++;
+	  }
+#	  splice @{$$hash_ref{'ssh-config'}[0]{hosts}[0]{host}[$elementNumber]{user}}, $userNumber, 1;
+	  last;
+	}
+	$userNumber ++;
+      }
+      last;
+    }
+    $elementNumber ++;
+  }
+  print Dumper($hash_ref);
+}
+
+__END__
+
+
+=head1 NAME
+
+B<updateToskaConfigFile>
+
+=head1 SYNOPSIS
+
+B<updateToskaConfigFile> -f configfile
+   [ --add-key=key --key-file=file |
+     --delete-key=key ]
+   [ --add-host=host |
+     --delete-host=host ]
+   [ --add-host-user=user --host=host |
+     --delete-host-user=user --host=host ]
+   [ --allow-key=key --host=host --host-user=user |
+     --disallow-key=key --host=host --host-user=user ]
+
+Update Toska Config File
+
+B<updateToskaConfigFile> [-h]
+
+Shows the help man page
+
+B<updateToskaConfigFile> [-v]
+
+shows the version
+
+=head1 DESCRIPTION
+
+The order of evaluation is:
+
+delete-key
+
+add-key
+
+delete-host
+
+add-host
+
+delete-host-user
+
+add-host-user
+
+disallow-key
+
+allow-key
+
+=head1 REQUIREMENTS and LIMITATIONS
+
+=head1 INSTALLATION
+
+=head1 BUGS
+
+There will be some.
+
+=head1 TODO
+
+disabled flag
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+Nito Martinez <Nito.Martinez@Vodafone.CO.UK>
+
+22/11/2004
+

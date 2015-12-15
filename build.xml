@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+
+<project default="package" basedir=".">
+
+  <property name="Name" value="Toolkit for OpenSsh Key Administration" />
+  <property name="name" value="toska" />
+  <property name="version" value="1.1" />
+
+  <property name="main.class" value="it.rabellino.toska.gui.KeysAdmin" /> 
+
+  <property file="../security.properties" />
+  <property name="src.dir" value="src" />
+  <property name="lib.dir" value="lib" />
+  <property name="dist.dir" value="dist" />
+  <property name="build.dir" value="build" />
+  <property name="build.classes" value="${build.dir}/classes"/>
+  <property name="webstart.dir" value="${dist.dir}/webstart"/>
+
+  <property name="debug" value="true" />
+  <property name="deprecation" value="false" />
+  <property name="optimize" value="true" />
+  
+  <path id="classpath">
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <path id="test-classpath">
+    <fileset dir="${build.dir}">
+      <include name="*.jar" />
+    </fileset>
+    <path refid="classpath" />
+  </path>
+
+  <target name="prepare">
+    <echo message=""/>
+    <echo message="------- Welcome to the ${name} (v. ${version}) build system -------" />
+    <echo message=""/>
+    <mkdir dir="${dist.dir}" />
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${build.classes}" />
+    <copy todir="${build.classes}/resources">
+      <fileset dir="src/resources"/>
+    </copy>
+    <copy todir="${build.classes}">
+      <fileset dir="src/java">
+        <exclude name="**/**.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="clean" description="Clean up everything">
+    <delete dir="${build.classes}" />
+    <delete dir="${webstart.dir}" />
+    <delete file="${lib.dir}/${name}.jar"/>
+  </target>
+
+
+  <target name="compile" depends="prepare" description="Compile the source">
+    <javac srcdir="${src.dir}"
+      destdir="${build.classes}"
+      debug="${debug}"
+      deprecation="${deprecation}"
+      optimize="${optimize}" >
+      <classpath refid="classpath" />
+    </javac>
+  </target>
+
+  <target name="package" depends="compile" description="Prepare the JAR packages">
+    <jar file="${lib.dir}/${name}.jar"
+      basedir="${build.classes}" 
+      includes="it/** resources/**"
+      manifest="${src.dir}/resources/Manifest.mf" />
+  </target>
+
+  <target name="webstart" depends="package" description="Prepare the Java Web Start application">
+
+    <copy todir="${webstart.dir}" 
+          file="src/resources/toska.jnlp" 
+          filtering="yes">
+      <filterset>
+        <filter token="toska.host" value="toska.sourceforge.net"/>
+        <filter token="toska.uri" value="webstart"/>
+      </filterset>
+    </copy>
+
+    <copy todir="${webstart.dir}" 
+          file="src/resources/toska32.jpg" />
+
+    <signjar jar="${lib.dir}/${name}.jar"
+       signedjar="${webstart.dir}/${name}.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    <signjar jar="lib/avalon-excalibur-4.1.jar"
+       signedjar="${webstart.dir}/avalon-excalibur-4.1.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    <signjar jar="lib/avalon-framework-4.1.2.jar"
+       signedjar="${webstart.dir}/avalon-framework-4.1.2.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    <signjar jar="lib/logkit-1.0.1.jar"
+       signedjar="${webstart.dir}/logkit-1.0.1.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    <signjar jar="lib/xalan-2.0.1.jar"
+       signedjar="${webstart.dir}/xalan-2.0.1.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    <signjar jar="lib/xerces-1.4.3.jar"
+       signedjar="${webstart.dir}/xerces-1.4.3.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    <!--   
+    <signjar jar="lib/xml-apis.jar"
+       signedjar="${webstart.dir}/xml-apis.jar"
+       alias="${signing.alias}" 
+       keystore="${signing.keystore}" 
+       storepass="${signing.secret}"/>
+    -->
+  </target>
+
+  <target name="run" depends="package" description="Run a java class">
+    <java classname="${main.class}" fork="yes" dir=".">
+      <classpath>
+        <path refid="test-classpath" />
+      </classpath>
+      <arg line="${test.file}" />
+    </java>
+  </target>
+
+</project>

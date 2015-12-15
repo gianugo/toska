@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+
+<role-list>
+  <role name="it.rabellino.toska.ConfigHandler"
+        shorthand="config-handler"
+        default-class="it.rabellino.toska.XMLConfigHandler">
+     <hint shorthand="xml" class="it.rabellino.toska.XMLConfigHandler"/> 
+   </role>     
+   <role name="it.rabellino.toska.Key"
+        shorthand="key"
+        default-class="it.rabellino.toska.OpenSSH2Key">
+     <hint shorthand="SSH2" class="it.rabellino.toska.OpenSSH2Key"/>    
+   </role>    
+   <role name="it.rabellino.toska.gui.MenuBar"
+        shorthand="menubar"
+        default-class="it.rabellino.toska.gui.KeysMenuBar">
+     <hint shorthand="menubar" class="it.rabellino.toska.gui.KeysMenuBar"/>  
+   </role>
+   <role name="it.rabellino.toska.gui.KeysTree"
+        shorthand="keystree"
+        default-class="it.rabellino.toska.gui.KeysTree" />
+   
+   <role name="it.rabellino.toska.gui.PopupMenuManager"
+         shorthand="menu-manager"
+         default-class="it.rabellino.toska.gui.PopupMenuManager" />     
+               
+   <role name="it.rabellino.toska.gui.menu.TreeMenuSelector"
+         shorthand="menu"
+         default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+      <hint shorthand="nop" class="it.rabellino.toska.gui.menu.NopMenu" />          
+      <hint shorthand="hostAliases" class="it.rabellino.toska.gui.menu.HostAliasesMenu" />
+      <hint shorthand="hostAlias" class="it.rabellino.toska.gui.menu.HostAliasMenu" />
+      <hint shorthand="userAliases" class="it.rabellino.toska.gui.menu.UserAliasesMenu" />
+      <hint shorthand="userAlias" class="it.rabellino.toska.gui.menu.UserAliasMenu" />
+      <hint shorthand="keyAliases" class="it.rabellino.toska.gui.menu.KeyAliasesMenu" />
+      <hint shorthand="keyAlias" class="it.rabellino.toska.gui.menu.KeyAliasMenu" />
+      <hint shorthand="keys" class="it.rabellino.toska.gui.menu.KeysMenu" />
+      <hint shorthand="key" class="it.rabellino.toska.gui.menu.KeyMenu" />
+      <hint shorthand="hosts" class="it.rabellino.toska.gui.menu.HostsMenu" />
+      <hint shorthand="host" class="it.rabellino.toska.gui.menu.HostMenu" />
+      <hint shorthand="user" class="it.rabellino.toska.gui.menu.UserMenu" />   
+   </role>
+   
+   <role name="it.rabellino.toska.gui.PanelSelector"
+         shorthand="panels"
+         default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+      <hint shorthand="hostAlias" class="it.rabellino.toska.gui.NewHostAliasPanel"/>
+      <hint shorthand="hostAliasElement" class="it.rabellino.toska.gui.NewHostAliasElementPanel"/>
+      <hint shorthand="userAlias" class="it.rabellino.toska.gui.NewUserAliasPanel"/>
+      <hint shorthand="userAliasElement" class="it.rabellino.toska.gui.NewUserAliasElementPanel"/>
+      <hint shorthand="keyAlias" class="it.rabellino.toska.gui.NewKeyAliasPanel"/>
+      <hint shorthand="keyAliasElement" class="it.rabellino.toska.gui.NewKeyAliasElementPanel"/>
+      <hint shorthand="host" class="it.rabellino.toska.gui.NewHostPanel"/>
+      <hint shorthand="user" class="it.rabellino.toska.gui.NewUserPanel"/>
+      <hint shorthand="key" class="it.rabellino.toska.gui.NewSSHKeyPanel"/>
+   </role>                                 
+</role-list>

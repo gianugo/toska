@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<ssh-config>
+  <scpString command="scp -q"/>
+  <hostAliases>
+  </hostAliases>  
+  <userAliases>
+  </userAliases>  
+  <keyAliases>
+  </keyAliases>  
+  <keys>
+  </keys>
+  <hosts>
+  </hosts>  
+</ssh-config>

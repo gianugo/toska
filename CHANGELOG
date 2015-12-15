@@ -1,0 +1,26 @@
+1.1
+---
+- Fixed error when importing a key alias. Error, key test12 is not references in the key database
+
+1.0
+---
+- Added the scp string used in the toska.xml file.
+- If the key doesn't exist then it will simply skip the key.
+
+0.95beta
+--------
+- Creation of the Changelog
+- Automated the creation of the binary package
+- Created aliases for keys, hosts and users. 
+
+The todo list is:
+- Permit to specify "scp" in a java properties file
+- Set default options for the Target key directory
+- Change the doScp method in FileDistribution to log in the message log instead
+ of Stdout...
+- Change the comment once you have deployed all the ssh keys.
+- Change System.err.println to logger.debug...
+- Checking consistency of keys in Alias keys. And also permit to add KeyAliases
+ when adding a key to a host.
+- Also check that when you add a KeyAliases, the key MUST exists.
+- Check overwrite of files dependeing on aliases + user...

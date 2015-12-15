@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+
+
+<ssh-config>
+  <keys>
+    <keyt user="pizzanelli@ksolutions.it" value="test Davide" disabled="true"/>
+    <key user="carrara@ksolutions.it" value="test Paolo"/>
+    <key user="carrarb@ksolutions.it" value="test Paolo"/>
+    <key user="carrarc@ksolutions.it" value="test Paolo"/>
+    <key user="carrard@ksolutions.it" value="test Paolo"/>
+    <key user="carrare@ksolutions.it" value="test Paolo"/>
+    <key user="carrarf@ksolutions.it" value="test Paolo"/>
+    <key user="carrarg@ksolutions.it" value="test Paolo"/>
+  </keys>
+
+  <hosts>
+  	<host name="network.ksolutions.it">
+  		<user name="root">
+  			<ssh-key user="rabellino@ksolutions.it" />  			
+  			<ssh-key user="carrara@ksolutions.it" />  			
+  			<ssh-key user="pizzanelli@ksolutions.it" />  			
+  		</user>
+  		<user name="pappa">
+  			<ssh-key user="rabellino@ksolutions.it" />  			
+  		</user>
+  		<user name="pippo">
+  			<ssh-key user="rabellino@ksolutions.it" />  			
+  		</user>
+  	</host>
+  	<host name="radius1.ksolutions.it" >
+  		<user name="oracle">
+  			<ssh-key user="rabellino@ksolutions.it" />  			
+  		</user>
+  		<user name="pippo">
+  			<ssh-key user="rabellino@ksolutions.it" />  			
+  		</user>
+    </host>
+  </hosts>
+</ssh-config>

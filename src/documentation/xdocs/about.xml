@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="css/document.css"?>
+<document>
+	<header>
+		<title>About this site</title>
+		<subtitle>Technologies used for this site</subtitle>
+		<authors>
+			<person name="Gianugo Rabellino" email="gianugo@apache.org"/>
+		</authors>
+	</header>
+	<body>
+	<section title="About this site">
+	 <p>
+   JFYI, this site is built and maintained using 
+   <link href="http://xml.apache.org/cocoon/">Apache Cocoon</link>. Not
+   everyone knows that Cocoon can be used even for offline site geneations,
+   as in this case.
+   </p>
+   <p>
+   Another software that I used is 
+   <link href="http://www.krysalis.org/centipede">Krysalis Centipede</link>,
+   which allowed me to have in minutes a Cocoon set upto produce 
+   this site with no hassle. 
+   Centipede is more than that, though, since it aims to be
+   a complete build system with lots of features. Too many features actually:
+   I was unable to come up with a Centipede based Toska distribution since
+   Centipede alone was summing up to 10MB compressed: not a big deal for
+   200K of source code. But it's definitely worth a look. 
+   </p>
+	</section>
+	</body>
+</document>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//APACHE//DTD Cocoon Documentation Book V1.0//EN" "dtd/book-cocoon-v10.dtd">
+
+<book software="TOSKA" 
+      title="Toska Documentation" 
+      copyright="2002 Gianugo Rabellino"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <menu label="About">
+    <menu-item label="Index" href="index.html"/>
+    <menu-item label="License" href="license.html"/>
+    <external label="Download" 
+       href="http://sourceforge.net/project/showfiles.php?group_id=56498"/>
+
+    <menu-item label="Screenshots" href="screenshots.html"/>
+    <menu-item label="About this site" href="about.html"/>
+  </menu>
+  <menu label="Documentation">
+    <menu-item label="Quick Start" href="quickstart.html"/>
+  </menu>
+
+</book>

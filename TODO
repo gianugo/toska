@@ -1,0 +1,11 @@
+TODO
+====
+- Set default options for the Target key directory
+- Change the doScp method in FileDistribution to log in the message log instead of Stdout...
+- Change the comment once you have deployed all the ssh keys.
+- Change System.err.println to logger.debug...
+- Checking consistency of keys in Alias keys. And also permit to add KeyAliases when adding a key to a host.
+- Also check that when you add a KeyAliases, the key MUST exists. Skipped
+- Check overwrite of files dependeing on aliases +user...
+- Check that there might be duplication of keys. For example when a user has a key called nito and a Key alias called mykey which is a keyAlias to nito. Check the FileCreator.java class.
+$Id: TODO,v 1.5 2005/03/14 16:22:45 nito007 Exp $

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="css/document.css"?>
+<document>
+	<header>
+		<title>Toska screenshots</title>
+		<subtitle>Toolkit for OpenSsh key Administration</subtitle>
+		<authors>
+			<person name="Gianugo Rabellino" email="gianugo@apache.org"/>
+		</authors>
+	</header>
+	<body>
+	<section title="Screenshots, of course">
+	 <p>
+   There is no site about a GUI without screenshots, so here we are. They
+   are really no big deal, since you can find the same two images in the
+   quickstart document, but I plan to come up with more (Linux and MacOSX
+   screenshots would ve very appreciated).
+   </p>
+   <p>
+   So here we go. First of all we have the Toska main screen:
+   </p>
+   <figure src="images/toska-main.png" alt="Toska main screen"/>
+
+   <p>
+   This screenshot shows a filled-up tree, together with the 
+   "New SSH Key" panel.
+   </p>
+   <figure src="images/toska-addkey.png" alt="New SSH key"/>
+	</section>
+	</body>
+</document>
